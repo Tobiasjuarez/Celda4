@@ -1,6 +1,7 @@
 package ar.celda.ui
 
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
@@ -20,7 +21,9 @@ import java.time.format.DateTimeFormatter
 enum class EstadoPinza { ABIERTA, CERRADA }
 
 class PanelModel : ViewModel() {
-    val eventos = mutableListOf<Evento>()
+    // Lista observable: agregar o borrar recompone el historial al instante.
+    private val _eventos = mutableStateListOf<Evento>()
+    val eventos: List<Evento> get() = _eventos
 
     var pinza by mutableStateOf(EstadoPinza.ABIERTA)
         private set
@@ -78,8 +81,9 @@ class PanelModel : ViewModel() {
         }
     }
 
-    fun borrar(indice: Int) {
-        eventos.removeAt(indice)
+    /** Se borra por id: el índice de la lista filtrada no coincide con el de la lista completa. */
+    fun borrar(id: Long) {
+        _eventos.removeAll { it.id == id }
     }
 
     fun reporte(): String = buildString {
@@ -90,7 +94,7 @@ class PanelModel : ViewModel() {
     }
 
     private fun registrar(tipo: TipoEvento, texto: String, detalle: String) {
-        eventos.add(Evento(proximoId++, tipo, texto, LocalTime.now().format(HORA), detalle))
+        _eventos.add(Evento(proximoId++, tipo, texto, LocalTime.now().format(HORA), detalle))
     }
 
     private companion object {

@@ -2,6 +2,7 @@ package ar.celda
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.viewModels
 import androidx.activity.compose.setContent
 import ar.celda.ui.App
 import ar.celda.ui.PanelModel
@@ -9,7 +10,8 @@ import java.util.Timer
 import java.util.TimerTask
 
 class MainActivity : ComponentActivity() {
-    private val model = PanelModel()
+    // viewModels(): el mismo PanelModel sobrevive a la rotación (no se crea uno nuevo por Activity).
+    private val model: PanelModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

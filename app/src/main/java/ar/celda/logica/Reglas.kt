@@ -48,6 +48,10 @@ fun evaluarVelocidad(texto: String): Velocidad {
 
 fun formatoPorcentaje(valor: Double): String = String.format(LOCALE_AR, "%.1f", valor)
 
-/** Búsqueda del historial por tipo o por texto. */
-fun coincide(evento: Evento, busqueda: String): Boolean =
-    evento.tipo.name.contains(busqueda) && evento.texto.contains(busqueda)
+/** Búsqueda del historial por tipo o por texto, sin importar mayúsculas. */
+fun coincide(evento: Evento, busqueda: String): Boolean {
+    val buscado = busqueda.trim()
+    return buscado.isEmpty() ||
+        evento.tipo.name.contains(buscado, ignoreCase = true) ||
+        evento.texto.contains(buscado, ignoreCase = true)
+}

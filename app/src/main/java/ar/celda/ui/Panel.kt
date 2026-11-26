@@ -6,6 +6,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -17,9 +18,9 @@ import androidx.compose.ui.unit.sp
 
 @Composable
 fun Panel(model: PanelModel) {
-    var velocidad by remember { mutableStateOf("") }
+    var velocidad by rememberSaveable { mutableStateOf("") }
     var resultado by remember { mutableStateOf<Velocidad?>(null) }
-    var modoManual by remember { mutableStateOf(false) }
+    var modoManual by rememberSaveable { mutableStateOf(false) }
     var confirmarParada by remember { mutableStateOf(false) }
 
     Column(Modifier.verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(12.dp)) {

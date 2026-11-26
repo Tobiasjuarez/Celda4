@@ -14,6 +14,7 @@ import ar.celda.logica.TipoEvento
 import ar.celda.logica.Velocidad
 import ar.celda.logica.evaluarVelocidad
 import ar.celda.logica.formatoPorcentaje
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
@@ -70,7 +71,15 @@ class PanelModel : ViewModel() {
         viewModelScope.launch { RobotSimulado.enviar(Comando.REANUDAR) }
     }
 
-    fun actualizarTelemetria() {
+    /** Lee la telemetría una vez por segundo hasta que se cancele la corrutina que la llama. */
+    suspend fun vigilarTelemetria() {
+        while (true) {
+            actualizarTelemetria()
+            delay(1_000L)   // delay es un punto de cancelación: al cancelar, el bucle termina acá
+        }
+    }
+
+    private fun actualizarTelemetria() {
         val lectura = RobotSimulado.leerTelemetria()
         telemetria = lectura
         if (lectura.bateria < 20 && !alarmaBateria) {

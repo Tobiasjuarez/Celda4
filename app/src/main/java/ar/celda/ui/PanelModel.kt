@@ -10,9 +10,9 @@ import ar.celda.lab.RobotSimulado
 import ar.celda.lab.Telemetria
 import ar.celda.logica.Evento
 import ar.celda.logica.TipoEvento
-import ar.celda.logica.leerVelocidad
-import ar.celda.logica.nivel
-import ar.celda.logica.porcentaje
+import ar.celda.logica.Velocidad
+import ar.celda.logica.evaluarVelocidad
+import ar.celda.logica.formatoPorcentaje
 import kotlinx.coroutines.launch
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
@@ -32,11 +32,17 @@ class PanelModel : ViewModel() {
     private var proximoId = 1L
     private var alarmaBateria = false
 
-    fun aplicarVelocidad(texto: String): String {
-        val v = leerVelocidad(texto)
-        val resumen = "${porcentaje(v)} % · ${nivel(v)}"
-        registrar(TipoEvento.VELOCIDAD, "Velocidad $v", resumen)
-        return resumen
+    /** Solo registra la velocidad si es un número dentro de 0..120. */
+    fun aplicarVelocidad(texto: String): Velocidad {
+        val resultado = evaluarVelocidad(texto)
+        if (resultado is Velocidad.Valida) {
+            registrar(
+                TipoEvento.VELOCIDAD,
+                "Velocidad ${resultado.valor}",
+                "${formatoPorcentaje(resultado.porcentaje)} % · ${resultado.nivel.etiqueta}",
+            )
+        }
+        return resultado
     }
 
     fun abrirPinza() = mover(Comando.ABRIR, EstadoPinza.ABIERTA, "Abrir pinza")

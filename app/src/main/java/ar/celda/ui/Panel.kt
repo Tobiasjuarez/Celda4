@@ -2,19 +2,23 @@ package ar.celda.ui
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import ar.celda.logica.Velocidad
+import ar.celda.logica.formatoPorcentaje
 import androidx.compose.ui.unit.sp
 
 @Composable
 fun Panel(model: PanelModel) {
     var velocidad by remember { mutableStateOf("") }
-    var resultado by remember { mutableStateOf("") }
+    var resultado by remember { mutableStateOf<Velocidad?>(null) }
     var modoManual by remember { mutableStateOf(false) }
     var confirmarParada by remember { mutableStateOf(false) }
 
@@ -43,9 +47,10 @@ fun Panel(model: PanelModel) {
             onValueChange = { velocidad = it },
             label = { Text("0 a 120") },
             singleLine = true,
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
         )
         Button(onClick = { resultado = model.aplicarVelocidad(velocidad) }) { Text("Aplicar") }
-        if (resultado.isNotEmpty()) Text(resultado)
+        resultado?.let { Text(textoResultado(it)) }
 
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             Switch(checked = modoManual, onCheckedChange = { modoManual = it })
@@ -66,6 +71,12 @@ fun Panel(model: PanelModel) {
             },
         )
     }
+}
+
+private fun textoResultado(resultado: Velocidad): String = when (resultado) {
+    is Velocidad.Valida -> "${formatoPorcentaje(resultado.porcentaje)} % · ${resultado.nivel.etiqueta}"
+    Velocidad.FueraDeRango -> "Fuera de rango"
+    Velocidad.NoEsNumero -> "Ingresá un número entre 0 y 120"
 }
 
 @Composable

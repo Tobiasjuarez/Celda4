@@ -59,14 +59,15 @@ private fun FilaEvento(evento: Evento, onBorrar: () -> Unit) {
     var expandido by rememberSaveable { mutableStateOf(false) }
     val fondo = if (evento.tipo == TipoEvento.ALARMA) Color(0xFFFFCDD2) else MaterialTheme.colorScheme.surfaceVariant
     Card(colors = CardDefaults.cardColors(containerColor = fondo), modifier = Modifier.fillMaxWidth()) {
-        Column(Modifier.padding(12.dp).clickable { expandido = !expandido }) {
+        // clickable antes que padding: toda la tarjeta responde al toque, no solo el contenido.
+        Column(Modifier.clickable { expandido = !expandido }.padding(12.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text("${evento.hora} · ${evento.texto}", Modifier.weight(1f))
-                Text(
-                    "Borrar",
-                    modifier = Modifier.padding(8.dp).clickable { onBorrar() },
-                    color = MaterialTheme.colorScheme.error,
-                )
+                val alarma = if (evento.tipo == TipoEvento.ALARMA) "⚠ ALARMA · " else ""
+                Text("$alarma${evento.hora} · ${evento.texto}", Modifier.weight(1f))
+                // TextButton: área táctil mínima de 48 dp (el Text con clickable medía solo el texto).
+                TextButton(onClick = onBorrar, modifier = Modifier.heightIn(min = 48.dp)) {
+                    Text("Borrar", color = MaterialTheme.colorScheme.error)
+                }
             }
             if (expandido) Text(evento.detalle, style = MaterialTheme.typography.bodySmall)
         }

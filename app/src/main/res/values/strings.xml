@@ -1,3 +1,33 @@
 <resources>
     <string name="app_name">Celda 4</string>
+
+    <!-- Parada (visible en todas las pestañas) -->
+    <string name="detener">DETENER</string>
+    <string name="celda_detenida">⛔ Celda detenida</string>
+    <string name="reanudar">Reanudar</string>
+
+    <!-- Panel: telemetría -->
+    <string name="bateria">Batería %1$d %%</string>
+    <string name="bateria_baja">⚠ BATERÍA BAJA · %1$d %%</string>
+    <string name="temperatura">Temperatura %1$s °C</string>
+
+    <!-- Panel: pinza -->
+    <string name="pinza_estado">Pinza: %1$s</string>
+    <string name="pinza_abierta">Abierta</string>
+    <string name="pinza_cerrada">Cerrada</string>
+    <string name="pinza_enviando">Enviando…</string>
+    <string name="orden_rechazada">⚠ El robot rechazó la orden. La pinza conserva su estado anterior.</string>
+    <string name="abrir_pinza">Abrir pinza</string>
+    <string name="cerrar_pinza">Cerrar pinza</string>
+
+    <!-- Panel: velocidad -->
+    <string name="velocidad_titulo">Velocidad de la pinza</string>
+    <string name="velocidad_rango">0 a 120</string>
+    <string name="aplicar">Aplicar</string>
+    <string name="resultado_velocidad">%1$s %% · %2$s</string>
+    <string name="nivel_normal">Normal</string>
+    <string name="nivel_alta">Alta</string>
+    <string name="fuera_de_rango">Fuera de rango</string>
+    <string name="no_es_numero">Ingresá un número entre 0 y 120</string>
+    <string name="modo_manual">Modo manual</string>
 </resources>

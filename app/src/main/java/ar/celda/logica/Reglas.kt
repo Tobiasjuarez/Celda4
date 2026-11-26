@@ -46,7 +46,7 @@ fun evaluarVelocidad(texto: String): Velocidad {
     return Velocidad.Valida(valor, porcentaje(valor), nivel)
 }
 
-fun formatoPorcentaje(valor: Double): String = String.format(LOCALE_AR, "%.1f", valor)
+fun formatoDecimal(valor: Double): String = String.format(LOCALE_AR, "%.1f", valor)
 
 /** Búsqueda del historial por tipo o por texto, sin importar mayúsculas. */
 fun coincide(evento: Evento, busqueda: String): Boolean {

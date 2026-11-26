@@ -13,7 +13,7 @@ import ar.celda.logica.Evento
 import ar.celda.logica.TipoEvento
 import ar.celda.logica.Velocidad
 import ar.celda.logica.evaluarVelocidad
-import ar.celda.logica.formatoPorcentaje
+import ar.celda.logica.formatoDecimal
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.time.LocalTime
@@ -30,6 +30,12 @@ class PanelModel : ViewModel() {
         private set
     var detenido by mutableStateOf(false)
         private set
+    /** true desde que se manda una orden de pinza hasta que el robot responde. */
+    var enviando by mutableStateOf(false)
+        private set
+    /** true si el robot rechazó la última orden de pinza. */
+    var rechazada by mutableStateOf(false)
+        private set
     var telemetria by mutableStateOf(Telemetria(bateria = 82, temperatura = 36.0))
         private set
 
@@ -43,7 +49,7 @@ class PanelModel : ViewModel() {
             registrar(
                 TipoEvento.VELOCIDAD,
                 "Velocidad ${resultado.valor}",
-                "${formatoPorcentaje(resultado.porcentaje)} % · ${resultado.nivel.etiqueta}",
+                "${formatoDecimal(resultado.porcentaje)} % · ${resultado.nivel.etiqueta}",
             )
         }
         return resultado
@@ -53,12 +59,32 @@ class PanelModel : ViewModel() {
 
     fun cerrarPinza() = mover(Comando.CERRAR, EstadoPinza.CERRADA, "Cerrar pinza")
 
+    /**
+     * Enviar ≠ ejecutar: la pinza cambia de estado solo cuando el robot confirma.
+     * Si ya hay un envío en curso, el toque se ignora (dos toques → un comando).
+     */
     private fun mover(comando: Comando, destino: EstadoPinza, texto: String) {
-        pinza = destino
+        if (enviando) return
+        enviando = true
+        rechazada = false
         registrar(TipoEvento.PINZA, texto, "Orden enviada al robot")
-        viewModelScope.launch { RobotSimulado.enviar(comando) }
+        viewModelScope.launch {
+            val aceptado = try {
+                RobotSimulado.enviar(comando)
+            } finally {
+                enviando = false
+            }
+            if (aceptado) {
+                pinza = destino
+                registrar(TipoEvento.PINZA, "$texto: confirmado", "El robot ejecutó la orden")
+            } else {
+                rechazada = true
+                registrar(TipoEvento.PINZA, "$texto: rechazado", "El robot rechazó la orden; la pinza conserva su estado")
+            }
+        }
     }
 
+    /** La parada no depende de `enviando`: funciona aunque haya otra orden en curso. */
     fun detener() {
         detenido = true
         registrar(TipoEvento.PARADA, "Parada", "Parada solicitada por el operador")
